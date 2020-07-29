@@ -6,8 +6,8 @@ class PlayPresenter(private val player: PlayModel.Player):PlayModel.Player {
     fun getInformation(url:String){
         model.getBasicInformation(url)
     }
-    fun getPlayAddress(url:String){
-        model.parseStringUrl(url)
+    fun getPlayAddress(html:String){
+        model.parseStringHtml(html)
     }
     override fun onSuccessParsing(playUrl: String) {
         player.onSuccessParsing(playUrl)

@@ -4,18 +4,18 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.webkit.JavascriptInterface
-import android.webkit.WebChromeClient
-import android.webkit.WebView
+import android.webkit.*
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import cn.huangchengxi.imomoe.R
 import cn.huangchengxi.imomoe.activities.detail.fragments.VideoInfoFragment
@@ -30,13 +30,27 @@ class DetailsActivity : AppCompatActivity(),PlayModel.Player,VideoInfoFragment.P
     private val back by lazy { findViewById<FrameLayout>(R.id.back) }
     private val videoTitle by lazy { findViewById<TextView>(R.id.video_title) }
     private val webView by lazy { WebView(this) }
-    private val webClient=object : WebChromeClient(){
-        override fun onProgressChanged(view: WebView?, newProgress: Int) {
-            if (newProgress>=100){
-                Toast.makeText(this@DetailsActivity,"Done",Toast.LENGTH_SHORT).show()
-                webView.loadUrl("javascript:HTMLOUT.processHTML(document.documentElement.outerHTML);")
-            }
-            super.onProgressChanged(view, newProgress)
+    private val webClient=object : WebViewClient(){
+        override fun onPageFinished(view: WebView?, url: String?) {
+            webView.stopLoading()
+            webView.pauseTimers()
+            webView.loadUrl("javascript:HTMLOUT.processHTML(document.getElementsByTagName('html'));")        }
+
+        override fun shouldOverrideUrlLoading(
+            view: WebView?,
+            request: WebResourceRequest?
+        ): Boolean {
+            return true
+        }
+
+        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+        override fun shouldInterceptRequest(
+            view: WebView?,
+            request: WebResourceRequest?
+        ): WebResourceResponse? {
+            val header=request?.requestHeaders.toString()
+            //Log.e("headers",header)
+            return super.shouldInterceptRequest(view, request)
         }
     }
 
@@ -48,7 +62,7 @@ class DetailsActivity : AppCompatActivity(),PlayModel.Player,VideoInfoFragment.P
         getAbsUrlFromIntent()
         init()
     }
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint("SetJavaScriptEnabled", "AddJavascriptInterface")
     private fun init(){
         back.setOnClickListener {
             onBackPressed()
@@ -58,10 +72,14 @@ class DetailsActivity : AppCompatActivity(),PlayModel.Player,VideoInfoFragment.P
         }else{
             presenter.getInformation(absUrl!!)
         }
-        pushFragment(videoInfoFragment)
+        //pushFragment(videoInfoFragment)
+        supportFragmentManager.beginTransaction()
+            .add(R.id.detail_fragment,videoInfoFragment)
+            .commitAllowingStateLoss()
 
         webView.settings.javaScriptEnabled=true
-        webView.webChromeClient=webClient
+        webView.addJavascriptInterface(JSInterface(),"HTMLOUT")
+        webView.webViewClient=webClient
     }
     private fun pushFragment(fragment: Fragment){
         supportFragmentManager.beginTransaction()
@@ -109,14 +127,10 @@ class DetailsActivity : AppCompatActivity(),PlayModel.Player,VideoInfoFragment.P
     }
 
     override fun onSuccessLoadingInformation(information: AnimInformation) {
-        Log.e("information",information.toString())
         videoTitle.text=SpannableStringBuilder(information.name)
         val episodes=ArrayList<EpisodeSource>()
         for (s in information.playSources){
             episodes.addAll(s.source)
-        }
-        for (e in episodes){
-            Log.e("episode",e.toString())
         }
         videoInfoFragment.updateEpisode(episodes)
     }
@@ -141,19 +155,15 @@ class DetailsActivity : AppCompatActivity(),PlayModel.Player,VideoInfoFragment.P
         pausePosition=mediaPlayer.currentPosition
     }
 
-    @SuppressLint("JavascriptInterface", "AddJavascriptInterface")
     override fun onSwitchVideo(url: String) {
         //presenter.getPlayAddress(url)
-        webView.addJavascriptInterface(object : JSInterface{
-            override fun processHTML(html: String) {
-                Log.e("html",html)
-            }
-
-        },"HTMLOUT")
         webView.loadUrl(url)
     }
-    private interface JSInterface{
+    private inner class JSInterface{
         @JavascriptInterface
-        fun processHTML(html:String)
+        fun processHTML(html:String){
+            Log.e("html",html)
+            presenter.getPlayAddress(html)
+        }
     }
 }

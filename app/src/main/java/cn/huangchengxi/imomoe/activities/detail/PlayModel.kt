@@ -18,11 +18,17 @@ class PlayModel(private val playerPresenter:Player):CommonHandler.MainThread {
 
     private val handler=CommonHandler(this)
 
-    fun parseStringUrl(url:String){
-        thread(start = true){
-            playDocument=getHtml(url)
+    fun parseStringHtml(html:String){
+        e("html",html)
+        playDocument=Jsoup.parse(html)
+        val iframe=playDocument!!.getElementById("play2").attr("abs:src")
+        e("iframe",playDocument.toString())
+        thread(start = true) {
+            val playerDoc=getHtml(iframe)
+            val player=playerDoc.select("video").attr("src")
             val msg=handler.obtainMessage()
-            msg.what=PARSE_SUCCESS
+            msg.what=PARSE_PLAYER_ADDRESS
+            msg.obj=player
             handler.sendMessage(msg)
         }
     }
@@ -37,18 +43,7 @@ class PlayModel(private val playerPresenter:Player):CommonHandler.MainThread {
     private fun getHtml(url: String):Document{
         return Jsoup.connect(url).maxBodySize(0).timeout(6000).get()
     }
-    private fun getPlayAddress(){
-        val iframe=playDocument!!.getElementById("play2").attr("abs:src")
-        e("iframe",playDocument.toString())
-        thread(start = true) {
-            val playerDoc=getHtml(iframe)
-            val player=playerDoc.select("video").attr("src")
-            val msg=handler.obtainMessage()
-            msg.what=PARSE_PLAYER_ADDRESS
-            msg.obj=player
-            handler.sendMessage(msg)
-        }
-    }
+
     private fun getInformation():AnimInformation{
         val fire= document!!.getElementsByClass("fire")[0]
         val coverUrl=fire.child(0).child(1).attr("abs:src")
@@ -82,9 +77,6 @@ class PlayModel(private val playerPresenter:Player):CommonHandler.MainThread {
             FETCH_SUCCESS->{
                 val info=getInformation()
                 playerPresenter.onSuccessLoadingInformation(info)
-            }
-            PARSE_SUCCESS->{
-                getPlayAddress()
             }
             PARSE_PLAYER_ADDRESS->{
                 val url=message.obj as String
