@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.Toolbar xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     app:contentInsetStart="0dp"
     android:background="@color/pink"
     android:id="@+id/toolbar"
@@ -9,15 +10,19 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <EditText
-            android:focusable="false"
-            android:inputType="none"
+        <FrameLayout
             android:gravity="center"
-            android:hint="@string/search"
             android:id="@+id/search_edit_text"
             android:background="@drawable/search_bar_bg"
             android:layout_gravity="center"
             android:layout_width="300dp"
-            android:layout_height="38dp"/>
+            android:layout_height="38dp">
+            <ImageView
+                android:src="@drawable/search"
+                android:layout_gravity="center|left"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                tools:ignore="RtlHardcoded" />
+        </FrameLayout>
     </FrameLayout>
 </androidx.appcompat.widget.Toolbar>

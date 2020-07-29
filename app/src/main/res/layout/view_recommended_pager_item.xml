@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/transparent">
     <ImageView
-        android:layout_gravity="center"
-        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher_background"
+        android:layout_gravity="center|top"
+        android:scaleType="center"
         android:id="@+id/cover_img"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="200dp"/>
+    <FrameLayout
+        android:layout_gravity="bottom"
+        android:background="@drawable/home_recommended_item_bg"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textAllCaps="false"
+            android:text="@string/alt"
+            android:id="@+id/page_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp" />
+    </FrameLayout>
 </FrameLayout>

@@ -1,31 +1,43 @@
 package cn.huangchengxi.imomoe.activities.main
 
+import android.content.Context
+import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.viewpager.widget.PagerAdapter
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import cn.huangchengxi.imomoe.R
 import com.bumptech.glide.Glide
 
-class RecommendedPagerAdapter(private val items:List<RecommendedPageItem>):PagerAdapter() {
-    private val views=ArrayList<View>()
+class RecommendedPagerAdapter(private val context: Context,private val items:List<RecommendedPageItem>):
+    RecyclerView.Adapter<RecommendedPagerAdapter.PagerHolder>() {
+    private var onClickListener:((View,Int)->Unit)?=null
 
-    override fun isViewFromObject(view: View, `object`: Any): Boolean {
-        return view == `object`
+    class PagerHolder(view: View):RecyclerView.ViewHolder(view){
+        val image: ImageView by lazy { view.findViewById<ImageView>(R.id.cover_img) }
+        val text:TextView by lazy { view.findViewById<TextView>(R.id.page_title) }
     }
 
-    override fun getCount(): Int {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PagerHolder {
+        val view=LayoutInflater.from(parent.context).inflate(R.layout.view_recommended_pager_item,parent,false)
+        return PagerHolder(view)
+    }
+
+    override fun getItemCount(): Int {
         return items.size
     }
 
-    override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val view=LayoutInflater.from(container.context).inflate(R.layout.view_recommended_pager_item,container,false)
-        Glide.with(container.context).load(items[position]).into(view.findViewById(R.id.cover_img))
-        views.add(position,view)
-        return items[position]
+    override fun onBindViewHolder(holder: PagerHolder, position: Int) {
+        val item=items[position]
+        Glide.with(context).load(item.coverUrl).into(holder.image)
+        holder.text.text=SpannableStringBuilder(item.viewName)
+        holder.image.setOnClickListener {
+            onClickListener?.invoke(it,position)
+        }
     }
-
-    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
-        container.removeView(views[position])
+    fun setOnClickListener(listener:((View,Int)->Unit)){
+        onClickListener=listener
     }
 }

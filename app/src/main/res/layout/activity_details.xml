@@ -1,9 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.detail.DetailsActivity">
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    tools:context=".activities.detail.DetailsActivity"
+    android:orientation="vertical">
+    <WebView
+        android:id="@+id/background_webview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"/>
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <SurfaceView
+                android:id="@+id/player_sv"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"/>
+            <androidx.appcompat.widget.Toolbar
+                android:fitsSystemWindows="true"
+                app:contentInsetStart="0dp"
+                android:background="@color/transparent"
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                app:layout_collapseMode="none">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <FrameLayout
+                        android:foreground="?selectableItemBackground"
+                        android:id="@+id/back"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
+                        <ImageView
+                            android:layout_margin="10dp"
+                            android:layout_gravity="center|left"
+                            android:src="@drawable/left"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"/>
+                    </FrameLayout>
+                    <TextView
+                        android:id="@+id/video_title"
+                        android:textColor="@color/white"
+                        android:text="@string/alt"
+                        android:textAllCaps="false"
+                        android:textSize="18sp"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"/>
+                </LinearLayout>
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+    <FrameLayout
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        android:id="@+id/detail_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

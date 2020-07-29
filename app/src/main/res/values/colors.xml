@@ -7,4 +7,6 @@
     <color name="searchBarGrey">#80DFDFDF</color>
     <color name="white">#FFF</color>
     <color name="black">#000</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="halfGrey">#80515151</color>
 </resources>
